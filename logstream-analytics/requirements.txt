@@ -1,3 +1,14 @@
+# requirements.txt
+# Dependencias para LogStream Analytics
+
+# Redis (conexión a Redis)
 redis==5.0.1
+
+# Celery (workers distribuidos)
 celery==5.3.4
+
+# Variables de entorno
 python-dotenv==1.0.0
+
+# Monitoreo de workers (opcional pero útil)
+psutil==5.9.6

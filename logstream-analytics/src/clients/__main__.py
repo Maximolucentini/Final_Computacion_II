@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Entry point para ejecutar el Log Producer como módulo.
 
