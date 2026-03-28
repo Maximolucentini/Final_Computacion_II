@@ -10,5 +10,5 @@ celery==5.3.4
 # Variables de entorno
 python-dotenv==1.0.0
 
-# Monitoreo de workers (opcional pero útil)
+# Monitoreo de workers 
 psutil==5.9.6

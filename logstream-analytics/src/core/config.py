@@ -3,12 +3,7 @@
 Configuración centralizada de LogStream Analytics.
 
 Todas las variables se leen desde el archivo .env en la raíz del proyecto.
-Nunca hardcodear valores en otros módulos: importar desde acá.
-
-Uso:
-    from src.core.config import config
-    print(config.REDIS_HOST)
-    print(config.LOG_SERVER_PORT)
+Nunca hardcodear valores en otros módulos
 """
 
 import os
@@ -16,7 +11,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
-# Buscar .env desde la raíz del proyecto
+# Buscar .env desde la raíz del proyecto 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _ENV_PATH = _PROJECT_ROOT / '.env'
 
@@ -102,13 +97,32 @@ class Config:
         self.CELERY_RESULT_EXPIRES: int                = _get('CELERY_RESULT_EXPIRES', 3600, int)
         self.CELERY_TIMEZONE: str                      = _get('CELERY_TIMEZONE', 'America/Argentina/Mendoza')
 
-        # --- Alert Manager ---
+        # --- Alert Manager — FIFO / comportamiento ---
         _fifo_raw                               = _get('FIFO_PATH', 'data/alert_pipe')
         self.FIFO_PATH: Path                    = (
             Path(_fifo_raw) if Path(_fifo_raw).is_absolute()
             else _PROJECT_ROOT / _fifo_raw
         )
         self.ALERT_LEVELS: list                 = _get_list('ALERT_LEVELS', ['ERROR', 'CRITICAL'])
+        self.ALERT_STORE_IN_DB: bool            = _get('ALERT_STORE_IN_DB', 'true').lower() == 'true'
+        self.ALERT_PRINT_TO_CONSOLE: bool       = _get('ALERT_PRINT_TO_CONSOLE', 'true').lower() == 'true'
+        self.ALERT_EMAIL_ENABLED: bool          = _get('ALERT_EMAIL_ENABLED', 'false').lower() == 'true'
+        # Niveles que disparan envío de mail (subconjunto de ALERT_LEVELS)
+        self.ALERT_MAIL_LEVELS: list            = _get_list('ALERT_MAIL_LEVELS', ['CRITICAL'])
+        # Intervalo en segundos para agrupar mails (0 = un mail por alerta)
+        self.ALERT_MAIL_BATCH_SECONDS: int      = _get('ALERT_MAIL_BATCH_SECONDS', 0, int)
+        # Pausa en segundos entre lecturas del FIFO cuando está vacío
+        self.ALERT_FIFO_POLL_INTERVAL: float    = _get('ALERT_FIFO_POLL_INTERVAL', 0.5, float)
+
+        # --- SMTP ---
+        self.SMTP_HOST: str                     = _get('SMTP_HOST', 'localhost')
+        self.SMTP_PORT: int                     = _get('SMTP_PORT', 587, int)
+        self.SMTP_USER: str                     = _get('SMTP_USER', '')
+        self.SMTP_PASSWORD: str                 = _get('SMTP_PASSWORD', '')
+        self.SMTP_USE_TLS: bool                 = _get('SMTP_USE_TLS', 'true').lower() == 'true'
+        self.ALERT_MAIL_FROM: str               = _get('ALERT_MAIL_FROM', '')
+        # Lista de destinatarios separados por coma
+        self.ALERT_MAIL_TO: list                = _get_list('ALERT_MAIL_TO', [])
 
         # --- General ---
         self.LOG_LEVEL: str                     = _get('LOG_LEVEL', 'INFO')
@@ -129,5 +143,5 @@ class Config:
         )
 
 
-# Singleton
+# Singleton 
 config = Config()
