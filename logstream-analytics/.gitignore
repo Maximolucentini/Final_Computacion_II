@@ -1,0 +1,29 @@
+# Entorno virtual
+venv/
+.venv/
+env/
+
+# Variables de entorno
+.env
+
+# Base de datos generada
+data/
+*.db
+
+
+# FIFO / pipes nombrados
+data/alert_pipe
+
+# Python
+__pycache__/
+
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Logs
+*.log
+
+
+

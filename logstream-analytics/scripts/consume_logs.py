@@ -9,8 +9,8 @@ Este script hace de "puente" entre Redis y Celery:
 3. Los workers guardan en SQLite y manejan alertas
 
 Uso:
-    python scripts/consume_logs.py
-    python scripts/consume_logs.py --queue log_queue --batch-size 10
+    python3 scripts/consume_logs.py
+    python3 scripts/consume_logs.py --queue log_queue --batch-size 10
 """
 
 import sys

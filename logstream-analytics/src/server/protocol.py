@@ -12,16 +12,8 @@ import asyncio
 async def read_message(reader):
     """
     Leer un mensaje usando el protocolo [longitud][payload].
-    
-    Args:
-        reader: asyncio.StreamReader
-        
-    Returns:
-        dict: Mensaje parseado como JSON, o None si conexión cerrada
-        
-    Raises:
-        ValueError: Si el mensaje es inválido
-        json.JSONDecodeError: Si el JSON es inválido
+    ValueError: Si el mensaje es inválido
+    json.JSONDecodeError: Si el JSON es inválido
     """
     try:
         # Leer 4 bytes de longitud
@@ -58,10 +50,7 @@ async def read_message(reader):
 async def send_message(writer, message):
     """
     Enviar un mensaje usando el protocolo [longitud][payload].
-    
-    Args:
-        writer: asyncio.StreamWriter
-        message: dict o string a enviar
+
     """
     # Convertir a JSON si es dict
     if isinstance(message, dict):
@@ -84,12 +73,6 @@ async def send_message(writer, message):
 def validate_log_entry(log):
     """
     Validar que el log tenga el formato correcto.
-    
-    Args:
-        log (dict): Log a validar
-        
-    Returns:
-        tuple: (bool, str) - (es_válido, mensaje_error)
     """
     # Verificar que sea un dict
     if not isinstance(log, dict):
