@@ -149,15 +149,58 @@ class LogServer:
                 print(f"   Rate promedio:   {rate:.2f} logs/seg")
         print()
 
+    def _detect_families(self) -> set:
+        """
+        Detectar qué familias de red (IPv4, IPv6) tiene disponibles
+        esta máquina usando socket.getaddrinfo().
+        """
+        families = set()
+
+        try:
+            results = socket.getaddrinfo(
+               None,                 # direcciones locales para bind
+               self.port,
+               socket.AF_UNSPEC,     # IPv4 e IPv6
+               socket.SOCK_STREAM,   # TCP
+               0,
+               socket.AI_PASSIVE
+            )
+
+            for family, *_ in results:
+                if family in (socket.AF_INET, socket.AF_INET6):
+                    families.add(family)
+
+        except socket.gaierror as e:
+            print(f"  Advertencia al detectar familias de red: {e}")
+
+        return families
+
     async def start(self):
-        """Iniciar servidor con soporte IPv4 e IPv6."""
+        """
+        Iniciar servidor detectando automáticamente las familias
+        de red disponibles en esta máquina (IPv4, IPv6 o ambas).
+        """
         if not self.connect_redis():
             return
 
+        # Detectar qué tiene la máquina antes de intentar levantar
+        families = self._detect_families()
+
+        if not families:
+            print(" No se detectó ninguna familia de red disponible")
+            return
+
+        has_ipv4 = socket.AF_INET  in families
+        has_ipv6 = socket.AF_INET6 in families
+
+        print(f" Familias detectadas: "
+              f"{'IPv4 ' if has_ipv4 else ''}"
+              f"{'IPv6' if has_ipv6 else ''}")
+
         servers = []
 
-        # Servidor IPv6
-        try:
+        # Levantar IPv6 solo si la máquina lo tiene
+        if has_ipv6:
             server_v6 = await asyncio.start_server(
                 self.handle_client,
                 '::',
@@ -166,11 +209,9 @@ class LogServer:
             )
             servers.append(server_v6)
             print(f" Servidor IPv6 iniciado en [::]:{self.port}")
-        except Exception as e:
-            print(f"  IPv6 no disponible: {e}")
 
-        # Servidor IPv4
-        try:
+        # Levantar IPv4 solo si la máquina lo tiene
+        if has_ipv4:
             server_v4 = await asyncio.start_server(
                 self.handle_client,
                 '0.0.0.0',
@@ -179,8 +220,6 @@ class LogServer:
             )
             servers.append(server_v4)
             print(f" Servidor IPv4 iniciado en 0.0.0.0:{self.port}")
-        except Exception as e:
-            print(f"  IPv4 no disponible: {e}")
 
         if not servers:
             print(" No se pudo iniciar ningún servidor")

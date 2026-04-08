@@ -8,7 +8,8 @@ Los argumentos CLI tienen prioridad sobre el .env.
 Uso:
     python3 -m src.clients --source webapp
     python3 -m src.clients --source database --rate 10
-    python -m src.clients --source api --server 192.168.1.100:9000
+    python3 -m src.clients --source api --server 127.0.0.1:9000
+    python3 -m src.clients --source webapp --server [::1]:9000
 """
 
 import argparse

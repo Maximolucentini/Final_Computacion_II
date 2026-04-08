@@ -128,7 +128,7 @@ class LogConsumer:
         logs = []
         
         for _ in range(self.batch_size):
-            # Sacar log de la cola (LPOP = left pop, FIFO)
+            # Sacar log de la cola 
             log_json = self.redis_client.lpop(self.queue_name)
             
             if log_json is None:

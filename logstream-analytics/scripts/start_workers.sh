@@ -22,11 +22,15 @@ if ! command -v celery &> /dev/null; then
     exit 1
 fi
 
+# Leer REDIS_HOST y REDIS_PORT del .env
+REDIS_HOST=$(grep '^REDIS_HOST=' .env | cut -d'=' -f2)
+REDIS_PORT=$(grep '^REDIS_PORT=' .env | cut -d'=' -f2)
+
 # Número de workers (default: 4)
 WORKERS=${1:-4}
 
 echo "  Workers: $WORKERS"
-echo " Broker: Redis (localhost:6379)"
+echo " Broker: Redis (${REDIS_HOST}:${REDIS_PORT})"
 echo " Cola: log_processing"
 echo ""
 echo " Presiona Ctrl+C para detener"

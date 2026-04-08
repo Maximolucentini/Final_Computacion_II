@@ -6,9 +6,9 @@ Los valores por defecto se leen del .env vía config.
 Los argumentos CLI tienen prioridad sobre el .env.
 
 Uso:
-    python -m src.alerts
-    python -m src.alerts --fifo /tmp/mi_pipe
-    python -m src.alerts --no-mail
+    python3 -m src.alerts
+    python3 -m src.alerts --fifo /tmp/mi_pipe
+    python3 -m src.alerts --no-mail
     python -m src.alerts --no-db
 """
 
